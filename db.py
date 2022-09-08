@@ -1,5 +1,5 @@
 from db_settings import postgresql as settings
-from sqlalchemy import create_engine, Table, Column, Integer, Float, String, MetaData
+from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData
 from sqlalchemy_utils import database_exists, create_database
 
 
@@ -19,7 +19,7 @@ engine = get_engine(settings['pguser'],
 
 meta = MetaData()
 
-ad_list = Table('Ad_list', meta,
+ad_list = Table('ad_list', meta,
                 Column('id_ad', Integer, primary_key=True),
                 Column('image', String(255)),
                 Column('title', String(100)),
@@ -27,7 +27,7 @@ ad_list = Table('Ad_list', meta,
                 Column('location', String(50)),
                 Column('beds', String(50)),
                 Column('description', String(255)),
-                Column('price', Float(25)),
+                Column('price', String(25)),
                 Column('currency', String(5))
 )
 

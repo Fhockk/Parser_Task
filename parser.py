@@ -34,7 +34,6 @@ class Client:
             self.parse_item(item=item)
 
     def parse_item(self, item):
-        format_time = '%d/%m/%Y'
         item_image = item.select_one("div.image").find("img").get("data-src")
         item_title = item.select_one("a.title ").text.strip()
         parse_date = item.select_one("div.location").select_one("span.date-posted").text
@@ -43,7 +42,9 @@ class Client:
         except ValueError:
             item_date = parse_date
         item_location = item.select_one("div.location").find("span").text.strip()
-        item_beds = item.select_one("span.bedrooms").text.replace("\n", "").replace(" ", "")[5:]
+        item_beds = item.select_one("span.bedrooms")
+        if item_beds:
+            item_beds = item_beds.text.replace("\n", "").replace(" ", "").replace("Beds:", "")
         item_description = item.select_one("div.description").contents[0].strip()
         item_price = item.select_one("div.price").contents[0].strip()
         if item_price == "Please Contact":
@@ -52,8 +53,6 @@ class Client:
         else:
             item_price = item.select_one("div.price").contents[0].strip()[1:].replace(',', '')
             item_currency = item.select_one("div.price").contents[0].strip()[0]
-
-
 
         conn = engine.connect()
         ins_ad_query = ad_list.insert().values(
@@ -70,7 +69,7 @@ class Client:
         conn.close()
 
     def run(self):
-        page = 80
+        page = 1
         while True:
             text = self.load_page(page)
             if text:

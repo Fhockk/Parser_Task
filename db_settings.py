@@ -1,7 +1,7 @@
 postgresql = {
-    'pguser': 'postgres',
-    'pgpasswd': 'postgres',
-    'pghost': 'localhost',
-    'pgport': '5432',
-    'pgdb': 'dataox'
+    'pguser': USER,
+    'pgpasswd': PASSWORD,
+    'pghost': SERVER,
+    'pgport': PORT,
+    'pgdb': DBNAME
 }
