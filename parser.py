@@ -15,11 +15,17 @@ class Client:
             'user-agent': ua.chrome
         }
 
-    def load_page(self):
-        url = "https://www.kijiji.ca/b-apartments-condos/city-of-toronto/c37l1700273"
-        response = self.session.get(url=url)
+    def load_page(self, page):
+        url = f"https://www.kijiji.ca/b-apartments-condos/city-of-toronto/page-{page}/c37l1700273"
+        if page == 1:
+            response = self.session.get(url=url)
+        else:
+            response = self.session.get(url=url, allow_redirects=False)
         response.raise_for_status()
-        return response.text
+        if response.status_code != 302:
+            return response.text
+        else:
+            return ''
 
     def parse_page(self, text: str):
         soup = BeautifulSoup(text, "lxml")
@@ -28,6 +34,7 @@ class Client:
             self.parse_item(item=item)
 
     def parse_item(self, item):
+        format_time = '%d/%m/%Y'
         item_image = item.select_one("div.image").find("img").get("data-src")
         item_title = item.select_one("a.title ").text.strip()
         parse_date = item.select_one("div.location").select_one("span.date-posted").text
@@ -39,6 +46,14 @@ class Client:
         item_beds = item.select_one("span.bedrooms").text.replace("\n", "").replace(" ", "")[5:]
         item_description = item.select_one("div.description").contents[0].strip()
         item_price = item.select_one("div.price").contents[0].strip()
+        if item_price == "Please Contact":
+            item_price = None
+            item_currency = None
+        else:
+            item_price = item.select_one("div.price").contents[0].strip()[1:].replace(',', '')
+            item_currency = item.select_one("div.price").contents[0].strip()[0]
+
+
 
         conn = engine.connect()
         ins_ad_query = ad_list.insert().values(
@@ -48,11 +63,18 @@ class Client:
             location=item_location,
             beds=item_beds,
             description=item_description,
-            price=item_price
+            price=item_price,
+            currency=item_currency
         )
         conn.execute(ins_ad_query)
         conn.close()
 
     def run(self):
-        text = self.load_page()
-        self.parse_page(text)
+        page = 80
+        while True:
+            text = self.load_page(page)
+            if text:
+                self.parse_page(text)
+            else:
+                break
+            page += 1

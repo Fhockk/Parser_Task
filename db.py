@@ -1,5 +1,5 @@
 from db_settings import postgresql as settings
-from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData
+from sqlalchemy import create_engine, Table, Column, Integer, Float, String, MetaData
 from sqlalchemy_utils import database_exists, create_database
 
 
@@ -27,7 +27,8 @@ ad_list = Table('Ad_list', meta,
                 Column('location', String(50)),
                 Column('beds', String(50)),
                 Column('description', String(255)),
-                Column('price', String(25))
+                Column('price', Float(25)),
+                Column('currency', String(5))
 )
 
 meta.create_all(engine)
