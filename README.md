@@ -24,7 +24,7 @@ pip install -r requirements.txt
 psql -d dataox -f dataox.sql
 ```
 
-## Run main.py
+## Finally, run main.py
 
 ## Google Spreadsheet: [Link](https://docs.google.com/spreadsheets/d/1NhzdRDzb0g7ojlAzMefNzXojgAuyPrtXdZ2EWWqSti8/edit#gid=0)
 
